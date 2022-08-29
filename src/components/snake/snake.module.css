@@ -1,0 +1,6 @@
+.Snake{
+    width: 38px;
+    height: 38px;
+    background-color: red;
+    position: absolute;
+}
