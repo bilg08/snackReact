@@ -7,7 +7,7 @@ function App() {
   const [snakePosition, setSnakePosition] = useState([[0,0],[0,1],[0,2],[0,3],[0,4]]);
   const [currentSnakeKeys, setCurrentSnakeKeys] = useState(toPosSet(snakePosition));
   const [isChanging, setIsChanging] = useState(true);
-  const [currentDirection, setCurrentDirection] = useState("");
+  // const [currentDirection, setCurrentDirection] = useState("");
 
   const moveRight = ([x, y]) => [x, y + 1];
   const moveLeft = ([x, y]) => [x, y - 1];
@@ -49,7 +49,7 @@ function App() {
     );
   }
   
-  // let currentDirection = moveRight;
+  let currentDirection = moveRight;
   document.addEventListener('keydown', (e) => {
     switch (e.key) {
       case "ArrowDown":
