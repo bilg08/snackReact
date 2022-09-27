@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, PureComponent } from "react";
 import "./App.css";
 
 function App() {
-  const [pixels, setPixels] = useState(new Map());
+  const [pixels, setPixels] = useState(new Set());
   const [gameArray, setGameArray] = useState(Array(30).fill(Array(30).fill(0)));
   const [snakePosition, setSnakePosition] = useState([
     [0, 0],
@@ -12,23 +12,65 @@ function App() {
     [0, 4],
   ]);
   const [currentSnakeKeys, setCurrentSnakeKeys] = useState(
-    toPosSet(snakePosition)
+    toPositionSet(snakePosition)
   );
+  const [currentFood, setCurrentFood] = useState(makeFood());
+
+ 
 
   const moveRight = ([x, y]) => [x, y + 1];
   const moveLeft = ([x, y]) => [x, y - 1];
   const moveUp = ([x, y]) => [x - 1, y];
   const moveDown = ([x, y]) => [x + 1, y];
-  // const [currentDirection, setCurrentDirection] = useState(() => moveRight);
-  let currentDirection = moveDown
-  function toPosSet(position) {
+  const [currentDirection, setCurrentDirection] = useState(() => moveRight);
+  // let currentDirection = moveRight;
+  function toPositionSet(snake) {
     let set = new Set();
-    for (let cell of position) {
+    for (let cell of snake) {
       let position = toKey(cell);
       set.add(position);
     }
     return set;
   }
+//  function useInterval(callback, delay) {
+//    const savedCallback = useRef();
+//    // Remember the latest callback.
+//    useEffect(() => {
+//      savedCallback.current = callback;
+//    }, [callback]);
+
+//    // Set up the interval.
+//    useEffect(() => {
+//      function tick() {
+//        savedCallback.current();
+//      }
+//      if (delay !== null) {
+//        let id = setInterval(tick, delay);
+//        return () => clearInterval(id);
+//      }
+//    }, [delay]);
+//  }
+
+  useEffect(() => {
+    let gameInterval = setInterval(step, 100);
+    return () => clearInterval(gameInterval);
+  })
+  function step() {
+    setSnakePosition((prevVal) => {
+      let prevValAcopy = prevVal;
+      let head = snakePosition[snakePosition.length - 1];
+      let newHead = currentDirection(head);
+      prevValAcopy.push(newHead);
+      if (toKey(newHead) === toKey(currentFood)) {
+        setCurrentFood(makeFood())
+      } else {
+        prevValAcopy.shift();
+      }
+      setCurrentSnakeKeys(toPositionSet(prevValAcopy));
+      return prevValAcopy;
+    });
+  }
+  // useInterval(step, 100, [snakePosition]);
 
   function toKey([x, y]) {
     return x + "_" + y;
@@ -39,51 +81,56 @@ function App() {
   }
 
   function Pixel({ pixelPosition }) {
+    function getBackgroundColor() {
+      if (toKey(currentFood) === pixelPosition) {
+        return "red";
+      } else if (currentSnakeKeys.has(pixelPosition)) {
+        return 'black';
+      }
+      return 'white';
+   }
     return (
       <div
         style={{
           width: `10px`,
           height: `10px`,
           border: `1px solid #aaa`,
-          background: currentSnakeKeys.has(pixelPosition) ? "black" : "none",
+          background:getBackgroundColor(),
         }}
       ></div>
     );
+  }
+  
+
+  function makeFood() {
+    let nextTop = Math.floor(Math.random() * 30);
+    let nextLeft = Math.floor(Math.random() * 30);
+    return [nextTop, nextLeft];
   }
 
   document.addEventListener("keydown", (e) => {
     switch (e.key) {
       case "ArrowDown":
-      currentDirection=moveDown
-        // setCurrentDirection(() => moveDown);
+      // currentDirection=moveDown
+        setCurrentDirection(() => moveDown);
         break;
       case "ArrowUp":
-      currentDirection=moveUp
-        // setCurrentDirection(() => moveUp);
+      // currentDirection=moveUp
+        setCurrentDirection(() => moveUp);
         break;
       case "ArrowLeft":
-      currentDirection=moveLeft
-        // setCurrentDirection(() => moveLeft);
+      // currentDirection=moveLeft
+        setCurrentDirection(() => moveLeft);
         break;
       case "ArrowRight":
-      currentDirection=moveRight
-        // setCurrentDirection(() => moveRight);
+      // currentDirection=moveRight
+        setCurrentDirection(() => moveRight);
         break;
     }
   });
-  function step() {
-    setSnakePosition((prevVal) => {
-      let prevValAcopy = prevVal;
-      prevValAcopy.shift();
-      let head = snakePosition[snakePosition.length - 1];
-      let newHead = currentDirection(head);
-      prevValAcopy.push(newHead);
-      setCurrentSnakeKeys(toPosSet(prevValAcopy));
-      return prevValAcopy;
-    });
-  }
+  
   useEffect(() => {
-    let gameInterval = setInterval(step, 1000);
+    let gameInterval = setTimeout(step, 100);
     return () => clearInterval(gameInterval);
   }, [snakePosition]);
   return (
@@ -93,7 +140,7 @@ function App() {
           <Row key={row + i}>
             {row.map((rowChild, j) => {
               let position = i + "_" + j;
-              pixels.set(position, <div></div>);
+              pixels.add(position);
               return (
                 <Pixel key={rowChild + j} pixelPosition={position}></Pixel>
               );
