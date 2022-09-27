@@ -1,7 +1,6 @@
 .canvas {
   width: 350px;
   height: 360px;
-  border: 5px solid black;
   position: relative;
   box-sizing:content-box;
 }
