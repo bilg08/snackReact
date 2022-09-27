@@ -14,6 +14,7 @@ function App() {
   const [currentSnakeKeys, setCurrentSnakeKeys] = useState(
     toPositionSet(snakePosition)
   );
+  const [directionQueue, setDirectionQueue] = useState();
   const [currentFood, setCurrentFood] = useState(makeFood());
   const [isGameOver, setIsGameOver] = useState(false);
   // const [currentDirection, setCurrentDirection] = useState("");
@@ -50,11 +51,6 @@ function App() {
       stopGame();
       return false;
     }
-    // let snakePositions = toPositionSet(snake);
-    // let position = x + "_" + y;
-    // if (snakePositions.has(position)) {
-    //   return false;
-    // }
     return true;
   }
   function Row({ children }) {
@@ -73,9 +69,9 @@ function App() {
     return (
       <div
         style={{
-          width: `10px`,
-          height: `10px`,
-          border: `1px solid #aaa`,
+          width: `12px`,
+          height: `11.3px`,
+          border: `1.04px solid rgb(170, 170, 170)`,
           background: getBackgroundColor(),
         }}></div>
     );
@@ -85,16 +81,24 @@ function App() {
   document.addEventListener("keydown", (e) => {
     switch (e.key) {
       case "ArrowDown":
-        currentDirection = moveDown;
+        if (currentDirection !== moveUp) {
+           currentDirection = moveDown;
+        }
         break;
       case "ArrowUp":
+        if (currentDirection !== moveDown) {
         currentDirection = moveUp;
+        }
         break;
       case "ArrowLeft":
+        if (currentDirection !== moveRight) {
         currentDirection = moveLeft;
+        }
         break;
       case "ArrowRight":
+        if (currentDirection !== moveLeft) {
         currentDirection = moveRight;
+        }
         break;
     }
   });
@@ -115,13 +119,61 @@ function App() {
       setCurrentSnakeKeys(toPositionSet(prevValAcopy));
       return prevValAcopy;
     });
+    // let head = currentSnake[currentSnake.length - 1];
+
+    // let nextDirection = currentDirection;
+
+    // while (directionQueue.length > 0) {
+    //   //omnoh ciglel
+    //   let candidateDirection = directionQueue.shift();
+    //   if (areOpposite(candidateDirection, currentDirection)) {
+    //     //omnoh ciglel maani odoo baigaa ciglel 2 esreg baival
+    //     //urgreljluuleed
+    //     continue;
+    //   }
+    //   //omnoh cigleleeree yvana;
+    //   nextDirection = candidateDirection;
+    //   break;
+    // }
+    // //ugui bol odoo baigaa cigleleeree yvana;
+    // currentDirection = nextDirection;
+    // let nextHead = currentDirection(head);
+    // if (!checkValidHead(currenSnakeKeys, nextHead)) {
+    //   stopGame();
+    // }
+    // currentSnake.push(nextHead);
+    // if (toKey(nextHead) === toKey(currentFood)) {
+    //   score++;
+    //   scoreTable.innerText = score;
+    //   currentFood = makeFood();
+    // } else {
+    //   currentSnake.shift();
+    // }
+    // currenSnakeKeys = toPositionSet(currentSnake);
+
+    // drawSnake();
+  }
+  function areOpposite(dir1, dir2) {
+    if (dir1 === moveLeft && dir2 === moveRight) {
+      return true;
+    }
+    if (dir1 === moveRight && dir2 === moveLeft) {
+      return true;
+    }
+    if (dir1 === moveUp && dir2 === moveDown) {
+      return true;
+    }
+    if (dir1 === moveDown && dir2 === moveUp) {
+      return true;
+    }
+    return false;
   }
   function stopGame() {
     clearInterval(gameInterval);
     setIsGameOver(true);
   }
   useEffect(() => {
-    gameInterval = setInterval(step, 100);
+    gameInterval = setInterval(step, 500);
     return () => clearInterval(gameInterval);
   }, [snakePosition]);
 
