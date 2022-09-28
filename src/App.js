@@ -11,12 +11,13 @@ function App() {
     [0, 3],
     [0, 4],
   ]);
+  const [score,setScore] = useState(0)
   const [currentSnakeKeys, setCurrentSnakeKeys] = useState(
     toPositionSet(snakePosition)
   );
-  const [directionQueue, setDirectionQueue] = useState();
   const [currentFood, setCurrentFood] = useState(makeFood());
   const [isGameOver, setIsGameOver] = useState(false);
+  const [isChanged,setIsChanged] = useState(false)
   // const [currentDirection, setCurrentDirection] = useState("");
   let gameInterval;
   const moveRight = ([x, y]) => [x, y + 1];
@@ -102,7 +103,17 @@ function App() {
         break;
     }
   });
+  useEffect(() => {
+    if (currentSnakeKeys.has(toKey(currentFood))) {
+      setCurrentFood(makeFood());
+      setScore(prevVal => prevVal+1)
+    };
+  }, [currentSnakeKeys]);
+
+  
+ 
   function step() {
+    
     setSnakePosition((prevVal) => {
       let prevValAcopy = prevVal;
       let head = snakePosition[snakePosition.length - 1];
@@ -111,8 +122,8 @@ function App() {
         stopGame();
       }
       prevValAcopy.push(newHead);
-      if (toKey(newHead) === toKey(currentFood)) {
-        setCurrentFood(makeFood());
+      if (currentSnakeKeys.has(toKey(currentFood))) {
+        
       } else {
         prevValAcopy.shift();
       }
@@ -153,27 +164,27 @@ function App() {
 
     // drawSnake();
   }
-  function areOpposite(dir1, dir2) {
-    if (dir1 === moveLeft && dir2 === moveRight) {
-      return true;
-    }
-    if (dir1 === moveRight && dir2 === moveLeft) {
-      return true;
-    }
-    if (dir1 === moveUp && dir2 === moveDown) {
-      return true;
-    }
-    if (dir1 === moveDown && dir2 === moveUp) {
-      return true;
-    }
-    return false;
-  }
+  // function areOpposite(dir1, dir2) {
+  //   if (dir1 === moveLeft && dir2 === moveRight) {
+  //     return true;
+  //   }
+  //   if (dir1 === moveRight && dir2 === moveLeft) {
+  //     return true;
+  //   }
+  //   if (dir1 === moveUp && dir2 === moveDown) {
+  //     return true;
+  //   }
+  //   if (dir1 === moveDown && dir2 === moveUp) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
   function stopGame() {
     clearInterval(gameInterval);
     setIsGameOver(true);
   }
   useEffect(() => {
-    gameInterval = setInterval(step, 500);
+    gameInterval = setInterval(step, 100);
     return () => clearInterval(gameInterval);
   }, [snakePosition]);
 
@@ -182,7 +193,8 @@ function App() {
       className="canvas"
       style={{
         border: isGameOver === false ? `5px solid black` : `5px solid red`,
-      }}>
+      }}
+    >
       {gameArray.map((row, i) => {
         return (
           <Row key={row + i}>
@@ -196,6 +208,7 @@ function App() {
           </Row>
         );
       })}
+      <p>{score}</p>
     </div>
   );
 }
