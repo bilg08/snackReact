@@ -78,30 +78,35 @@ function App() {
   }
 
   let currentDirection = moveRight;
-  document.addEventListener("keydown", (e) => {
-    switch (e.key) {
-      case "ArrowDown":
-        if (currentDirection !== moveUp) {
+  useEffect(() => {
+   function change(e) {
+     switch (e.key) {
+       case "ArrowDown":
+         if (currentDirection !== moveUp) {
            currentDirection = moveDown;
-        }
-        break;
-      case "ArrowUp":
-        if (currentDirection !== moveDown) {
-        currentDirection = moveUp;
-        }
-        break;
-      case "ArrowLeft":
-        if (currentDirection !== moveRight) {
-        currentDirection = moveLeft;
-        }
-        break;
-      case "ArrowRight":
-        if (currentDirection !== moveLeft) {
-        currentDirection = moveRight;
-        }
-        break;
+         }
+         break;
+       case "ArrowUp":
+         if (currentDirection !== moveDown) {
+           currentDirection = moveUp;
+         }
+         break;
+       case "ArrowLeft":
+         if (currentDirection !== moveRight) {
+           currentDirection = moveLeft;
+         }
+         break;
+       case "ArrowRight":
+         if (currentDirection !== moveLeft) {
+           currentDirection = moveRight;
+         }
+         break;
+     }
     }
-  });
+      document.addEventListener("keydown", change);
+return ()=> document.removeEventListener('keydown',change)
+  },[currentDirection])
+  
   function step() {
     setSnakePosition((prevVal) => {
       let prevValAcopy = prevVal;
@@ -173,7 +178,7 @@ function App() {
     setIsGameOver(true);
   }
   useEffect(() => {
-    gameInterval = setInterval(step, 500);
+    gameInterval = setInterval(step, 1000);
     return () => clearInterval(gameInterval);
   }, [snakePosition]);
 
