@@ -18,12 +18,12 @@ function App() {
   const [currentFood, setCurrentFood] = useState(makeFood());
   const [isGameOver, setIsGameOver] = useState(false);
   const [isChanged,setIsChanged] = useState(false)
-  // const [currentDirection, setCurrentDirection] = useState("");
   let gameInterval;
   const moveRight = ([x, y]) => [x, y + 1];
   const moveLeft = ([x, y]) => [x, y - 1];
   const moveUp = ([x, y]) => [x - 1, y];
   const moveDown = ([x, y]) => [x + 1, y];
+  // const [currentDirection, setCurrentDirection] = useState("");
 
   function toPositionSet(position) {
     let set = new Set();
@@ -108,6 +108,7 @@ function App() {
       setCurrentFood(makeFood());
       setScore(prevVal => prevVal+1)
     };
+    console.log(snakePosition.length)
   }, [currentSnakeKeys]);
 
   
@@ -122,7 +123,7 @@ function App() {
         stopGame();
       }
       prevValAcopy.push(newHead);
-      if (currentSnakeKeys.has(toKey(currentFood))) {
+      if (toKey(newHead) === toKey(currentFood)) {
         
       } else {
         prevValAcopy.shift();
@@ -184,7 +185,7 @@ function App() {
     setIsGameOver(true);
   }
   useEffect(() => {
-    gameInterval = setInterval(step, 100);
+    gameInterval = setInterval(step, 500);
     return () => clearInterval(gameInterval);
   }, [snakePosition]);
 
