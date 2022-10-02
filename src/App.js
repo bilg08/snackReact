@@ -3,13 +3,7 @@ import "./App.css";
 
 function App() {
   const [gameArray] = useState(Array(20).fill(Array(20).fill(0)));
-  const [snakePosition, setSnakePosition] = useState([
-    [0, 0],
-    [0, 1],
-    [0, 2],
-    [0, 3],
-    [0, 4],
-  ]);
+  const [snakePosition, setSnakePosition] = useState(initSnake);
   const [currentSnakeKeys, setCurrentSnakeKeys] = useState(
     toPositionSet(snakePosition)
   );
@@ -20,6 +14,15 @@ function App() {
   let gameInterval = useRef();
   const [score, setScore] = useState(0);
 
+  function initSnake() {
+    return [
+      [0, 0],
+      [0, 1],
+      [0, 2],
+      [0, 3],
+      [0, 4],
+    ];
+  }
   function moveRight([x, y]) {
     return [x, y + 1];
   }
@@ -88,6 +91,7 @@ function App() {
 
   useEffect(() => {
     function handleDirection(e) {
+      console.log(e.key)
       switch (e.key) {
         case "ArrowDown":
           if (currentDirection !== moveUp) {
@@ -127,7 +131,7 @@ function App() {
           }
           break;
         default:
-          setCurrentDirection(currentDirection);
+          setCurrentDirection(()=> currentDirection)
       }
     }
 
@@ -176,6 +180,7 @@ function App() {
       return prevValAcopy;
     });
   }
+  
 
   function areOpposite(dir1, dir2) {
     if (dir1 === moveLeft.toString() && dir2 === moveRight.toString()) {
@@ -196,6 +201,8 @@ function App() {
   function stopGame() {
     clearInterval(gameInterval.current);
     setIsGameOver(true);
+    setSnakePosition(initSnake());
+    setCurrentSnakeKeys(toPositionSet(initSnake()))
   }
 
   useEffect(() => {
@@ -204,10 +211,11 @@ function App() {
       return () => clearInterval(gameInterval.current);
     }
   });
-
+  
   return (
     <>
       <h1 style={{ color: "#FF577F" }}>Таны Оноо {score}</h1>
+      <p style={{ color: "red" }}>ENTER Дарж дахин эхэлнэ үү</p>
       <div
         className="canvas"
         style={{
