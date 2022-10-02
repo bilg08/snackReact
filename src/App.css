@@ -4,7 +4,7 @@ body{
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #002E94;
+  background: radial-gradient(#F94892,#FFA1CF);
 }
 
 .canvas {

@@ -7,9 +7,9 @@ function App() {
   const [currentSnakeKeys, setCurrentSnakeKeys] = useState(
     toPositionSet(snakePosition)
   );
-  const [directionQueue, setDirectionQueue] = useState([]);
+  let [directionQueue, setDirectionQueue] = useState([]);
   const [currentFood, setCurrentFood] = useState(makeFood);
-  const [isGameOver, setIsGameOver] = useState(false);
+  let [isGameOver, setIsGameOver] = useState(false);
   const [currentDirection, setCurrentDirection] = useState(() => moveRight);
   let gameInterval = useRef();
   const [score, setScore] = useState(0);
@@ -128,9 +128,12 @@ function App() {
             });
           }
           break;
+        case "S":
+        case "s":
+          stopGame();
+          break;
         case "Enter":
-          setSnakePosition(initSnake());
-          setCurrentSnakeKeys(toPositionSet(initSnake()));          
+          restartGame();
           break;
         default:
           setCurrentDirection(() => currentDirection);
@@ -139,8 +142,10 @@ function App() {
 
     document.addEventListener("keydown", handleDirection);
     return () => document.removeEventListener("keydown", handleDirection);
-  });
-
+    });
+  
+  
+ 
   function step() {
     setSnakePosition((prevVal) => {
       let prevValAcopy = prevVal;
@@ -201,23 +206,28 @@ function App() {
   }
 
   function stopGame() {
-    clearInterval(gameInterval.current);
     setIsGameOver(true);
-    setSnakePosition(initSnake());
-    setCurrentSnakeKeys(toPositionSet(initSnake()))
   }
-
+  function restartGame() {
+    setScore(0);
+    setIsGameOver(false);
+    setDirectionQueue(directionQueue = [])
+    setCurrentDirection(()=>moveRight);
+    setSnakePosition(initSnake());
+    setCurrentSnakeKeys(toPositionSet(initSnake()));
+  }
+  
   useEffect(() => {
     if (isGameOver === false) {
       gameInterval.current = setInterval(step, 50);
       return () => clearInterval(gameInterval.current);
-    }
+    } 
   });
   
   return (
     <>
-      <h1 style={{ color: "#FF577F" }}>Таны Оноо {score}</h1>
-      <p style={{ color: "red" }}>ENTER Дарж дахин эхэлнэ үү</p>
+      <h1 style={{ color: "#A7FFE4" }}>Таны Оноо {score}</h1>
+      <p >ENTER Дарж дахин эхэлнэ үү</p>
       <div
         className="canvas"
         style={{
