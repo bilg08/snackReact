@@ -17,8 +17,8 @@ function App() {
   const [currentFood, setCurrentFood] = useState(makeFood);
   const [isGameOver, setIsGameOver] = useState(false);
   const [currentDirection, setCurrentDirection] = useState(() => moveRight);
-  // let directionQueue = [];
   let gameInterval = useRef();
+  const [score, setScore] = useState(0);
 
   function moveRight([x, y]) {
     return [x, y + 1];
@@ -168,6 +168,7 @@ function App() {
       prevValAcopy.push(newHead);
       if (toKey(newHead) === toKey(currentFood)) {
         setCurrentFood(makeFood);
+        setScore(score+1)
       } else {
         prevValAcopy.shift();
       }
@@ -205,24 +206,27 @@ function App() {
   });
 
   return (
-    <div
-      className="canvas"
-      style={{
-        border: isGameOver === false ? `5px solid black` : `5px solid red`,
-      }}>
-      {gameArray.map((row, i) => {
-        return (
-          <Row key={row + i}>
-            {row.map((rowChild, j) => {
-              let position = i + "_" + j;
-              return (
-                <Pixel key={rowChild + j} pixelPosition={position}></Pixel>
-              );
-            })}
-          </Row>
-        );
-      })}
-    </div>
+    <>
+      <h1 style={{ color: "#FF577F" }}>Таны Оноо {score}</h1>
+      <div
+        className="canvas"
+        style={{
+          border: isGameOver === false ? `5px solid black` : `5px solid red`,
+        }}>
+        {gameArray.map((row, i) => {
+          return (
+            <Row key={row + i}>
+              {row.map((rowChild, j) => {
+                let position = i + "_" + j;
+                return (
+                  <Pixel key={rowChild + j} pixelPosition={position}></Pixel>
+                );
+              })}
+            </Row>
+          );
+        })}
+      </div>
+    </>
   );
 }
 
