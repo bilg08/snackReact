@@ -162,7 +162,7 @@ function App() {
         stopGame();
       }
       if (currentSnakeKeys.has(toKey(newHead))) {
-        stopGame()
+        stopGame();
       }
 
       prevValAcopy.push(newHead);
