@@ -126,13 +126,8 @@ function App() {
             });
           }
           break;
-<<<<<<< HEAD
         default:
           setCurrentDirection(currentDirection);
-=======
-        default: 
-          setCurrentDirection(currentDirection)
->>>>>>> testWithCustomHook
       }
     }
 
@@ -141,8 +136,6 @@ function App() {
   });
 
   function step() {
-    
-
     setSnakePosition((prevVal) => {
       let prevValAcopy = prevVal;
       let head = snakePosition[snakePosition.length - 1];
@@ -150,7 +143,6 @@ function App() {
       let nextDirection = currentDirection;
       while (directionQueue.length > 0) {
         let candidateDirection = directionQueue.shift();
-<<<<<<< HEAD
         if (
           areOpposite(
             candidateDirection.toString(),
@@ -165,26 +157,14 @@ function App() {
         break;
       }
       setCurrentDirection(() => nextDirection);
-=======
-        if (areOpposite(candidateDirection.toString(), currentDirection.toString())) {
-          continue;
-        }
-        //hervee omnoh bolon odoo baigaa ciglel esreg bol 
-        //omnoh cigleleeree yvna
-        nextDirection = candidateDirection;
-        break;
-      };
-      setCurrentDirection(() => nextDirection)
->>>>>>> testWithCustomHook
       let newHead = currentDirection(head);
       if (!checkValidHead(newHead)) {
         stopGame();
       }
-<<<<<<< HEAD
+      if (currentSnakeKeys.has(toKey(newHead))) {
+        stopGame()
+      }
 
-=======
-      
->>>>>>> testWithCustomHook
       prevValAcopy.push(newHead);
       if (toKey(newHead) === toKey(currentFood)) {
         setCurrentFood(makeFood);
