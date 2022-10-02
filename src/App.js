@@ -91,11 +91,9 @@ function App() {
 
   useEffect(() => {
     function handleDirection(e) {
-      console.log(e.key)
       switch (e.key) {
         case "ArrowDown":
           if (currentDirection !== moveUp) {
-            // directionQueue.push(moveDown);
             setDirectionQueue((prevVal) => {
               let prevValAcopy = prevVal;
               prevValAcopy = [...prevValAcopy, moveDown];
@@ -130,8 +128,12 @@ function App() {
             });
           }
           break;
+        case "Enter":
+          setSnakePosition(initSnake());
+          setCurrentSnakeKeys(toPositionSet(initSnake()));          
+          break;
         default:
-          setCurrentDirection(()=> currentDirection)
+          setCurrentDirection(() => currentDirection);
       }
     }
 
