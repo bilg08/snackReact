@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
 function App() {
-  const [pixels, setPixels] = useState(new Map());
-  const [gameArray, setGameArray] = useState(Array(30).fill(Array(30).fill(0)));
+  const [gameArray] = useState(Array(20).fill(Array(20).fill(0)));
   const [snakePosition, setSnakePosition] = useState([
     [0, 0],
     [0, 1],
@@ -14,15 +13,25 @@ function App() {
   const [currentSnakeKeys, setCurrentSnakeKeys] = useState(
     toPositionSet(snakePosition)
   );
-  const [directionQueue, setDirectionQueue] = useState();
-  const [currentFood, setCurrentFood] = useState(makeFood());
+  const [directionQueue, setDirectionQueue] = useState([]);
+  const [currentFood, setCurrentFood] = useState(makeFood);
   const [isGameOver, setIsGameOver] = useState(false);
-  // const [currentDirection, setCurrentDirection] = useState("");
-  let gameInterval;
-  const moveRight = ([x, y]) => [x, y + 1];
-  const moveLeft = ([x, y]) => [x, y - 1];
-  const moveUp = ([x, y]) => [x - 1, y];
-  const moveDown = ([x, y]) => [x + 1, y];
+  const [currentDirection, setCurrentDirection] = useState(() => moveRight);
+  // let directionQueue = [];
+  let gameInterval = useRef();
+
+  function moveRight([x, y]) {
+    return [x, y + 1];
+  }
+  function moveLeft([x, y]) {
+    return [x, y - 1];
+  }
+  function moveUp([x, y]) {
+    return [x - 1, y];
+  }
+  function moveDown([x, y]) {
+    return [x + 1, y];
+  }
 
   function toPositionSet(position) {
     let set = new Set();
@@ -37,8 +46,8 @@ function App() {
     return x + "_" + y;
   }
   function makeFood() {
-    let nextTop = Math.floor(Math.random() * 30);
-    let nextLeft = Math.floor(Math.random() * 30);
+    let nextTop = Math.floor(Math.random() * 20);
+    let nextLeft = Math.floor(Math.random() * 20);
     return [nextTop, nextLeft];
   }
 
@@ -47,7 +56,7 @@ function App() {
       stopGame();
       return false;
     }
-    if (x >= 30 || y >= 30) {
+    if (x >= 20 || y >= 20) {
       stopGame();
       return false;
     }
@@ -69,118 +78,128 @@ function App() {
     return (
       <div
         style={{
-          width: `12px`,
-          height: `11.3px`,
-          border: `1.04px solid rgb(170, 170, 170)`,
+          width: `20px`,
+          height: `20px`,
+          border: `1.05px solid rgba(0,0,0,0.5)`,
           background: getBackgroundColor(),
         }}></div>
     );
   }
 
-  let currentDirection = moveRight;
   useEffect(() => {
-   function change(e) {
-     switch (e.key) {
-       case "ArrowDown":
-         if (currentDirection !== moveUp) {
-           currentDirection = moveDown;
-         }
-         break;
-       case "ArrowUp":
-         if (currentDirection !== moveDown) {
-           currentDirection = moveUp;
-         }
-         break;
-       case "ArrowLeft":
-         if (currentDirection !== moveRight) {
-           currentDirection = moveLeft;
-         }
-         break;
-       case "ArrowRight":
-         if (currentDirection !== moveLeft) {
-           currentDirection = moveRight;
-         }
-         break;
-     }
+    function handleDirection(e) {
+      switch (e.key) {
+        case "ArrowDown":
+          if (currentDirection !== moveUp) {
+            // directionQueue.push(moveDown);
+            setDirectionQueue((prevVal) => {
+              let prevValAcopy = prevVal;
+              prevValAcopy = [...prevValAcopy, moveDown];
+              return prevValAcopy;
+            });
+          }
+          break;
+        case "ArrowUp":
+          if (currentDirection !== moveDown) {
+            setDirectionQueue((prevVal) => {
+              let prevValAcopy = prevVal;
+              prevValAcopy = [...prevValAcopy, moveUp];
+              return prevValAcopy;
+            });
+          }
+          break;
+        case "ArrowLeft":
+          if (currentDirection !== moveRight) {
+            setDirectionQueue((prevVal) => {
+              let prevValAcopy = prevVal;
+              prevValAcopy = [...prevValAcopy, moveLeft];
+              return prevValAcopy;
+            });
+          }
+          break;
+        case "ArrowRight":
+          if (currentDirection !== moveLeft) {
+            setDirectionQueue((prevVal) => {
+              let prevValAcopy = prevVal;
+              prevValAcopy = [...prevValAcopy, moveRight];
+              return prevValAcopy;
+            });
+          }
+          break;
+        default:
+          setCurrentDirection(currentDirection);
+      }
     }
-      document.addEventListener("keydown", change);
-return ()=> document.removeEventListener('keydown',change)
-  },[currentDirection])
-  
+
+    document.addEventListener("keydown", handleDirection);
+    return () => document.removeEventListener("keydown", handleDirection);
+  });
+
   function step() {
     setSnakePosition((prevVal) => {
       let prevValAcopy = prevVal;
       let head = snakePosition[snakePosition.length - 1];
+      //daraagiin ciglel
+      let nextDirection = currentDirection;
+      while (directionQueue.length > 0) {
+        let candidateDirection = directionQueue.shift();
+        if (
+          areOpposite(
+            candidateDirection.toString(),
+            currentDirection.toString()
+          )
+        ) {
+          continue;
+        }
+        //hervee omnoh bolon odoo baigaa ciglel esreg bol
+        //omnoh cigleleeree yvna
+        nextDirection = candidateDirection;
+        break;
+      }
+      setCurrentDirection(() => nextDirection);
       let newHead = currentDirection(head);
       if (!checkValidHead(newHead)) {
         stopGame();
       }
+
       prevValAcopy.push(newHead);
       if (toKey(newHead) === toKey(currentFood)) {
-        setCurrentFood(makeFood());
+        setCurrentFood(makeFood);
       } else {
         prevValAcopy.shift();
       }
       setCurrentSnakeKeys(toPositionSet(prevValAcopy));
       return prevValAcopy;
     });
-    // let head = currentSnake[currentSnake.length - 1];
-
-    // let nextDirection = currentDirection;
-
-    // while (directionQueue.length > 0) {
-    //   //omnoh ciglel
-    //   let candidateDirection = directionQueue.shift();
-    //   if (areOpposite(candidateDirection, currentDirection)) {
-    //     //omnoh ciglel maani odoo baigaa ciglel 2 esreg baival
-    //     //urgreljluuleed
-    //     continue;
-    //   }
-    //   //omnoh cigleleeree yvana;
-    //   nextDirection = candidateDirection;
-    //   break;
-    // }
-    // //ugui bol odoo baigaa cigleleeree yvana;
-    // currentDirection = nextDirection;
-    // let nextHead = currentDirection(head);
-    // if (!checkValidHead(currenSnakeKeys, nextHead)) {
-    //   stopGame();
-    // }
-    // currentSnake.push(nextHead);
-    // if (toKey(nextHead) === toKey(currentFood)) {
-    //   score++;
-    //   scoreTable.innerText = score;
-    //   currentFood = makeFood();
-    // } else {
-    //   currentSnake.shift();
-    // }
-    // currenSnakeKeys = toPositionSet(currentSnake);
-
-    // drawSnake();
   }
+
   function areOpposite(dir1, dir2) {
-    if (dir1 === moveLeft && dir2 === moveRight) {
+    if (dir1 === moveLeft.toString() && dir2 === moveRight.toString()) {
       return true;
     }
-    if (dir1 === moveRight && dir2 === moveLeft) {
+    if (dir1 === moveRight.toString() && dir2 === moveLeft.toString()) {
       return true;
     }
-    if (dir1 === moveUp && dir2 === moveDown) {
+    if (dir1 === moveUp.toString() && dir2 === moveDown.toString()) {
       return true;
     }
-    if (dir1 === moveDown && dir2 === moveUp) {
+    if (dir1 === moveDown.toString() && dir2 === moveUp.toString()) {
       return true;
     }
     return false;
   }
+
   function stopGame() {
-    clearInterval(gameInterval);
+    clearInterval(gameInterval.current);
     setIsGameOver(true);
   }
+
   useEffect(() => {
-    gameInterval = setInterval(step, 1000);
-    return () => clearInterval(gameInterval);
-  }, [snakePosition]);
+    if (isGameOver === false) {
+      gameInterval.current = setInterval(step, 50);
+      return () => clearInterval(gameInterval.current);
+    }
+  });
 
   return (
     <div
@@ -193,7 +212,6 @@ return ()=> document.removeEventListener('keydown',change)
           <Row key={row + i}>
             {row.map((rowChild, j) => {
               let position = i + "_" + j;
-              pixels.set(position, <div></div>);
               return (
                 <Pixel key={rowChild + j} pixelPosition={position}></Pixel>
               );
