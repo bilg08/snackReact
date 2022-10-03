@@ -23,7 +23,7 @@ function App() {
   const moveLeft = ([x, y]) => [x, y - 1];
   const moveUp = ([x, y]) => [x - 1, y];
   const moveDown = ([x, y]) => [x + 1, y];
-  // const [currentDirection, setCurrentDirection] = useState("");
+  const [currentDirection, setCurrentDirection] = useState( () => moveRight);
 
   function toPositionSet(position) {
     let set = new Set();
@@ -78,38 +78,38 @@ function App() {
     );
   }
 
-  let currentDirection = moveRight;
-  document.addEventListener("keydown", (e) => {
-    switch (e.key) {
-      case "ArrowDown":
-        if (currentDirection !== moveUp) {
-           currentDirection = moveDown;
-        }
-        break;
-      case "ArrowUp":
-        if (currentDirection !== moveDown) {
-        currentDirection = moveUp;
-        }
-        break;
-      case "ArrowLeft":
-        if (currentDirection !== moveRight) {
-        currentDirection = moveLeft;
-        }
-        break;
-      case "ArrowRight":
-        if (currentDirection !== moveLeft) {
-        currentDirection = moveRight;
-        }
-        break;
-    }
-  });
-  useEffect(() => {
-    if (currentSnakeKeys.has(toKey(currentFood))) {
-      setCurrentFood(makeFood());
-      setScore(prevVal => prevVal+1)
-    };
-    console.log(snakePosition.length)
-  }, [currentSnakeKeys]);
+  // let currentDirection = moveRight;
+  // document.addEventListener("keydown", (e) => {
+  //   switch (e.key) {
+  //     case "ArrowDown":
+  //       if (currentDirection !== moveUp) {
+  //          currentDirection = moveDown;
+  //       }
+  //       break;
+  //     case "ArrowUp":
+  //       if (currentDirection !== moveDown) {
+  //       currentDirection = moveUp;
+  //       }
+  //       break;
+  //     case "ArrowLeft":
+  //       if (currentDirection !== moveRight) {
+  //       currentDirection = moveLeft;
+  //       }
+  //       break;
+  //     case "ArrowRight":
+  //       if (currentDirection !== moveLeft) {
+  //       currentDirection = moveRight;
+  //       }
+  //       break;
+  //   }
+  // });
+  // useEffect(() => {
+  //   if (currentSnakeKeys.has(toKey(currentFood))) {
+  //     setCurrentFood(makeFood());
+  //     setScore(prevVal => prevVal+1)
+  //   };
+  //   console.log(snakePosition.length)
+  // }, [currentSnakeKeys]);
 
   
  
@@ -131,61 +131,15 @@ function App() {
       setCurrentSnakeKeys(toPositionSet(prevValAcopy));
       return prevValAcopy;
     });
-    // let head = currentSnake[currentSnake.length - 1];
-
-    // let nextDirection = currentDirection;
-
-    // while (directionQueue.length > 0) {
-    //   //omnoh ciglel
-    //   let candidateDirection = directionQueue.shift();
-    //   if (areOpposite(candidateDirection, currentDirection)) {
-    //     //omnoh ciglel maani odoo baigaa ciglel 2 esreg baival
-    //     //urgreljluuleed
-    //     continue;
-    //   }
-    //   //omnoh cigleleeree yvana;
-    //   nextDirection = candidateDirection;
-    //   break;
-    // }
-    // //ugui bol odoo baigaa cigleleeree yvana;
-    // currentDirection = nextDirection;
-    // let nextHead = currentDirection(head);
-    // if (!checkValidHead(currenSnakeKeys, nextHead)) {
-    //   stopGame();
-    // }
-    // currentSnake.push(nextHead);
-    // if (toKey(nextHead) === toKey(currentFood)) {
-    //   score++;
-    //   scoreTable.innerText = score;
-    //   currentFood = makeFood();
-    // } else {
-    //   currentSnake.shift();
-    // }
-    // currenSnakeKeys = toPositionSet(currentSnake);
-
-    // drawSnake();
+    
   }
-  // function areOpposite(dir1, dir2) {
-  //   if (dir1 === moveLeft && dir2 === moveRight) {
-  //     return true;
-  //   }
-  //   if (dir1 === moveRight && dir2 === moveLeft) {
-  //     return true;
-  //   }
-  //   if (dir1 === moveUp && dir2 === moveDown) {
-  //     return true;
-  //   }
-  //   if (dir1 === moveDown && dir2 === moveUp) {
-  //     return true;
-  //   }
-  //   return false;
-  // }
+ 
   function stopGame() {
     clearInterval(gameInterval);
     setIsGameOver(true);
   }
   useEffect(() => {
-    gameInterval = setInterval(step, 500);
+    gameInterval = setInterval(step, 1000);
     return () => clearInterval(gameInterval);
   }, [snakePosition]);
 
