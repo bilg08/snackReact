@@ -1,6 +1,15 @@
+
+body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: radial-gradient(#F94892,#FFA1CF);
+}
+
 .canvas {
   width: 400px;
-  height: 400px;
+  height: 445px;
   position: relative;
-  box-sizing:content-box;
+  box-sizing: content-box;
 }
